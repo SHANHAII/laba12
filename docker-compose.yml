@@ -14,9 +14,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: banking_user
-      POSTGRES_PASSWORD: banking_pass
-      POSTGRES_DB: banking_db
+      POSTGRES_USER: ${POSTGRES_USER:-banking_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-banking_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-banking_db}
     ports:
       - "5432:5432"
     volumes:
