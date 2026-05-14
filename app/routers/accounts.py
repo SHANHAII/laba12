@@ -1,6 +1,6 @@
-from typing import List
+from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app import crud
@@ -11,7 +11,11 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 
 @router.get("/", response_model=List[AccountResponse])
-def list_accounts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def list_accounts(
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
+    db: Session = Depends(get_db),
+):
     """Получить список всех счетов."""
     return crud.get_accounts(db, skip=skip, limit=limit)
 
@@ -23,7 +27,7 @@ def create_account(account: AccountCreate, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Счёт с номером {account.account_number} уже существует",
+            detail="Счёт с таким номером уже существует",
         )
     return crud.create_account(db, account)
 
